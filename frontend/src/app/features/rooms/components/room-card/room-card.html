@@ -1,0 +1,13 @@
+<article class="room-card">
+  <h2 class="room-card__name">{{ room().name }}</h2>
+  <p class="room-card__capacity">
+    Capacity: <strong>{{ room().capacity }}</strong> {{ room().capacity === 1 ? 'person' : 'people' }}
+  </p>
+  <a
+    class="room-card__book"
+    [routerLink]="['/rooms', room().id, 'book']"
+    [attr.aria-label]="'Book room ' + room().name"
+  >
+    Book room
+  </a>
+</article>

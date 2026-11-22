@@ -1,0 +1,45 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.room-card {
+  height: 100%;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #dfe3ea;
+  border-left: 4px solid #3b5bdb;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgb(16 24 40 / 8%);
+
+  &__name {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    color: #1d2433;
+  }
+
+  &__capacity {
+    margin: 0;
+    color: #4a5568;
+  }
+
+  &__book {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+    background: #3b5bdb;
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      background: #2f4bc0;
+    }
+
+    &:focus-visible {
+      outline: 3px solid #a5b4fc;
+      outline-offset: 2px;
+    }
+  }
+}

@@ -1,0 +1,40 @@
+<main class="booking-page">
+  <header class="booking-page__header">
+    <h1>Edit booking</h1>
+  </header>
+
+  @switch (status()) {
+    @case ('loading') {
+      <p class="booking-page__message" role="status">Loading your booking…</p>
+    }
+    @case ('error') {
+      <section class="booking-page__message booking-page__message--error" role="alert">
+        <p>We couldn't load this booking. Check that the API is running and try again.</p>
+        <button type="button" class="booking-page__button" (click)="load()">Retry</button>
+      </section>
+      <a class="booking-page__back" routerLink="/my-bookings">← Back to my bookings</a>
+    }
+    @case ('not-found') {
+      <p class="booking-page__message" role="status">
+        We couldn't find this booking in this browser. It may have been cancelled, or it was made somewhere else.
+      </p>
+      <a class="booking-page__back" routerLink="/my-bookings">← Back to my bookings</a>
+    }
+    @case ('loaded') {
+      @if (room(); as selectedRoom) {
+        <section class="booking-page__room" aria-labelledby="selected-room-name">
+          <h2 id="selected-room-name" class="booking-page__room-name">{{ selectedRoom.name }}</h2>
+          <p class="booking-page__room-capacity">
+            The room can't be changed.
+            @if (selectedRoom.capacity > 0) {
+              Capacity: <strong>{{ selectedRoom.capacity }}</strong>
+              {{ selectedRoom.capacity === 1 ? 'person' : 'people' }}
+            }
+          </p>
+        </section>
+
+        <app-booking-form [room]="selectedRoom" [booking]="booking()" (saved)="onSaved()" />
+      }
+    }
+  }
+</main>

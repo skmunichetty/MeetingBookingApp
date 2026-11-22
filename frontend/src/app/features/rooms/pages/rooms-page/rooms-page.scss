@@ -1,0 +1,68 @@
+.rooms-page {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem;
+
+  &__header {
+    margin-bottom: 2rem;
+
+    h1 {
+      margin: 0 0 0.25rem;
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      color: #1d2433;
+    }
+  }
+
+  &__intro {
+    margin: 0;
+    color: #4a5568;
+  }
+
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__message {
+    margin: 0;
+    padding: 1.25rem 1.5rem;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    color: #4a5568;
+
+    p {
+      margin: 0 0 1rem;
+    }
+
+    &--error {
+      border: 1px solid #f5c2c7;
+      background: #fff5f5;
+      color: #842029;
+    }
+  }
+
+  &__retry,
+  &__clear {
+    padding: 0.5rem 1.25rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: #3b5bdb;
+    color: #ffffff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: #2f4bc0;
+    }
+
+    &:focus-visible {
+      outline: 3px solid #a5b4fc;
+      outline-offset: 2px;
+    }
+  }
+}

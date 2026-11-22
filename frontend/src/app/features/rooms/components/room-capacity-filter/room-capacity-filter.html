@@ -1,0 +1,17 @@
+<div class="capacity-filter">
+    <label class="capacity-filter__label" for="room-capacity-filter"> Minimum Seats</label>
+    <select 
+        #capacitySelect
+        id="room-capacity-filter"
+        class="capacity-filter__select"
+        (change)="selectMinimum(capacitySelect.value)">
+
+        <option value="" [selected]="minimumCapacity() === null">Any capacity</option>
+        @for (threshold of thresholds; track threshold) {
+            <option [value]="threshold"
+            [selected]="minimumCapacity() === threshold">
+                {{ threshold }}+ seats
+            </option>
+        }
+    </select>
+</div>

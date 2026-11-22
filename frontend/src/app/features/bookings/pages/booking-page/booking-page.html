@@ -1,0 +1,36 @@
+<main class="booking-page">
+  <a class="booking-page__back" routerLink="/rooms">← Back to rooms</a>
+
+  <header class="booking-page__header">
+    <h1>Book a room</h1>
+  </header>
+
+  @switch (status()) {
+    @case ('loading') {
+      <p class="booking-page__message" role="status">Loading room details…</p>
+    }
+    @case ('error') {
+      <section class="booking-page__message booking-page__message--error" role="alert">
+        <p>We couldn't load the room details. Check that the API is running and try again.</p>
+        <button type="button" class="booking-page__button" (click)="loadRooms()">Retry</button>
+      </section>
+    }
+    @case ('loaded') {
+      @if (room(); as selectedRoom) {
+        <section class="booking-page__room" aria-labelledby="selected-room-name">
+          <h2 id="selected-room-name" class="booking-page__room-name">{{ selectedRoom.name }}</h2>
+          <p class="booking-page__room-capacity">
+            Capacity: <strong>{{ selectedRoom.capacity }}</strong>
+            {{ selectedRoom.capacity === 1 ? 'person' : 'people' }}
+          </p>
+        </section>
+
+        <app-booking-form [room]="selectedRoom" />
+      } @else {
+        <p class="booking-page__message" role="status">
+          We couldn't find a room with ID “{{ id() }}”. It may have been removed, or the link may be wrong.
+        </p>
+      }
+    }
+  }
+</main>

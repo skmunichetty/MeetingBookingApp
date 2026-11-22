@@ -1,0 +1,43 @@
+<main class="rooms-page">
+  <header class="rooms-page__header">
+    <h1>Meeting rooms</h1>
+    <p class="rooms-page__intro">Rooms available to book in the office.</p>
+  </header>
+
+  @switch (status()) {
+    @case ('loading') {
+      <p class="rooms-page__message" role="status">Loading rooms…</p>
+    }
+    @case ('error') {
+      <section class="rooms-page__message rooms-page__message--error" role="alert">
+        <p>We couldn't load the meeting rooms. Check that the API is running and try again.</p>
+        <button type="button" class="rooms-page__retry" (click)="loadRooms()">Retry</button>
+      </section>
+    }
+    @case ('loaded') {
+      @if (rooms().length === 0) {
+        <p class="rooms-page__message">No meeting rooms have been set up yet.</p>
+      } @else {
+        <app-room-capacity-filter
+          [minimumCapacity]="minimumCapacity()"
+          (minimumCapacityChange)="setMinimumCapacity($event)"
+        />
+
+        @if (visibleRooms().length === 0) {
+          <section class="rooms-page__message" role="status">
+            <p>No rooms match this capacity.</p>
+            <button type="button" class="rooms-page__clear" (click)="clearFilter()">Clear filter</button>
+          </section>
+        } @else {
+          <ul class="rooms-page__list" aria-label="Meeting rooms">
+            @for (room of visibleRooms(); track room.id) {
+              <li>
+                <app-room-card [room]="room" />
+              </li>
+            }
+          </ul>
+        }
+      }
+    }
+  }
+</main>

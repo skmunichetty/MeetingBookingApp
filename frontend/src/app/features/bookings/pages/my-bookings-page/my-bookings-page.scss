@@ -1,0 +1,270 @@
+.my-bookings {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem;
+
+  &__header {
+    margin-bottom: 1.5rem;
+
+    h1 {
+      margin: 0 0 0.25rem;
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      color: #1d2433;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  &__intro {
+    margin: 0;
+    color: #4a5568;
+  }
+
+  &__notice {
+    margin: 0 0 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #b7e4c7;
+    border-radius: 0.5rem;
+    background: #f4fbf6;
+    color: #1e5631;
+  }
+
+  &__message {
+    margin: 0;
+    padding: 1.25rem 1.5rem;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    color: #4a5568;
+
+    p {
+      margin: 0 0 1rem;
+    }
+
+    &--error {
+      border: 1px solid #f5c2c7;
+      background: #fff5f5;
+      color: #842029;
+    }
+  }
+
+  &__scroller {
+    overflow-x: auto;
+    border: 1px solid #dfe3ea;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgb(16 24 40 / 8%);
+  }
+
+  &__table {
+    width: 100%;
+    min-width: 44rem;
+    border-collapse: collapse;
+    color: #1d2433;
+
+    th,
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #edf0f5;
+      text-align: left;
+    }
+
+    thead th {
+      background: #f8f9fc;
+      color: #4a5568;
+      font-size: 0.875rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    tbody tr:last-child > * {
+      border-bottom: 0;
+    }
+  }
+
+  &__nowrap {
+    white-space: nowrap;
+  }
+
+  &__icons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &__icon-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 1px solid #c7d0e0;
+    border-radius: 0.5rem;
+    background: #ffffff;
+    color: #3b5bdb;
+    cursor: pointer;
+
+    svg {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    &:hover:not(:disabled) {
+      background: #eef2ff;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: progress;
+    }
+
+    &--danger {
+      color: #b02a37;
+
+      &:hover:not(:disabled) {
+        background: #fff0f1;
+      }
+    }
+
+    &:hover .my-bookings__tooltip,
+    &:focus-visible .my-bookings__tooltip {
+      opacity: 1;
+    }
+  }
+
+  &__tooltip {
+    position: absolute;
+    bottom: calc(100% + 0.375rem);
+    left: 50%;
+    z-index: 1;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    background: #1d2433;
+    color: #ffffff;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+
+  &__confirm-row > td {
+    background: #fff9f9;
+  }
+
+  &__confirm {
+    position: sticky;
+    left: 0;
+    max-width: min(40rem, calc(100vw - 5rem));
+    padding: 0.25rem 0 0.5rem;
+  }
+
+  &__question {
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+  }
+
+  &__confirm-details {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.25rem 1rem;
+    margin: 0 0 0.75rem;
+
+    dt {
+      font-weight: 600;
+    }
+
+    dd {
+      margin: 0;
+      color: #4a5568;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  &__status {
+    margin: 0.75rem 0 0;
+    color: #4a5568;
+  }
+
+  &__error {
+    margin-top: 0.75rem;
+    color: #842029;
+
+    p {
+      margin: 0 0 0.25rem;
+    }
+  }
+
+  &__button {
+    display: inline-block;
+    min-height: 2.75rem;
+    padding: 0.5rem 1.25rem;
+    border: 1px solid #3b5bdb;
+    border-radius: 0.5rem;
+    background: #3b5bdb;
+    color: #ffffff;
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: #2f4bc0;
+    }
+
+    &:disabled {
+      opacity: 0.65;
+      cursor: progress;
+    }
+  }
+
+  &__button--secondary {
+    background: #ffffff;
+    color: #3b5bdb;
+
+    &:hover:not(:disabled) {
+      background: #eef2ff;
+    }
+  }
+
+  &__button--danger {
+    border-color: #b02a37;
+    background: #b02a37;
+
+    &:hover:not(:disabled) {
+      background: #8f1f2b;
+    }
+  }
+
+  &__text-button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #3b5bdb;
+    font: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  &__scroller,
+  &__icon-button,
+  &__button,
+  &__text-button {
+    &:focus-visible {
+      outline: 3px solid #a5b4fc;
+      outline-offset: 2px;
+    }
+  }
+}

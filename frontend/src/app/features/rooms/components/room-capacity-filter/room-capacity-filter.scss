@@ -1,0 +1,27 @@
+.capacity-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin-bottom: 1.5rem;
+
+    &__label {
+        font-weight: 600;
+        color: #1d2433;        
+    }
+
+    &__select {
+        min-width: 12rem;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #dfe3ea;
+        border-radius: 0.5rem;
+        background: #ffffff;
+        color: #1d2433;
+        font: inherit;
+
+        &:focus-visible {
+            outline: 3px solid #a5b4fc;
+            outline-offset: 2px;
+        }
+    }
+}

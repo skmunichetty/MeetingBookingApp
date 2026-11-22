@@ -1,0 +1,152 @@
+<main class="my-bookings">
+  <a class="back-link" routerLink="/rooms">← Back to meeting rooms</a>
+
+  <header class="my-bookings__header">
+    <h1 id="my-bookings-heading" tabindex="-1">My bookings</h1>
+    <p class="my-bookings__intro">Bookings made in this browser.</p>
+  </header>
+
+  <div aria-live="polite">
+    @if (notice(); as message) {
+      <p class="my-bookings__notice">{{ message }}</p>
+    }
+  </div>
+
+  @switch (status()) {
+    @case ('loading') {
+      <p class="my-bookings__message" role="status">Loading your bookings…</p>
+    }
+    @case ('error') {
+      <section class="my-bookings__message my-bookings__message--error" role="alert">
+        <p>We couldn't load your bookings. Check that the API is running and try again.</p>
+        <button type="button" class="my-bookings__button" (click)="loadBookings()">Retry</button>
+      </section>
+    }
+    @case ('loaded') {
+      @if (sortedBookings().length === 0) {
+        <p class="my-bookings__message">
+          You have no upcoming bookings in this browser. Go back to meeting rooms to choose a room and book it.
+        </p>
+      } @else {
+        <div class="my-bookings__scroller" role="region" aria-labelledby="my-bookings-caption" tabindex="0">
+          <table class="my-bookings__table">
+            <caption id="my-bookings-caption" class="visually-hidden">
+              Your upcoming bookings, earliest first
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Room</th>
+                <th scope="col">Meeting title</th>
+                <th scope="col">Booked by</th>
+                <th scope="col">Date</th>
+                <th scope="col">Time</th>
+                <th scope="col"><span class="my-bookings__actions-heading">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (booking of sortedBookings(); track booking.id) {
+                <tr>
+                  <td>{{ booking.roomName }}</td>
+                  <th scope="row">{{ booking.meetingTitle }}</th>
+                  <td>{{ booking.guestName }}</td>
+                  <td><time [attr.datetime]="booking.date">{{ booking.date | date: 'EEE, MMM d, y' }}</time></td>
+                  <td class="my-bookings__nowrap">{{ booking | timeRange }}</td>
+                  <td>
+                    <div class="my-bookings__icons">
+                      <a
+                        class="my-bookings__icon-button"
+                        [routerLink]="['/my-bookings', booking.id, 'edit']"
+                        [attr.aria-label]="'Edit ' + booking.meetingTitle + ' in ' + booking.roomName"
+                      >
+                        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+                          <path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3z" />
+                          <path d="M13.5 6.5l3 3" />
+                        </svg>
+                        <span class="my-bookings__tooltip" aria-hidden="true">Edit booking</span>
+                      </a>
+                      <button
+                        type="button"
+                        id="cancel-booking-{{ booking.id }}"
+                        class="my-bookings__icon-button my-bookings__icon-button--danger"
+                        [attr.aria-label]="'Cancel ' + booking.meetingTitle + ' in ' + booking.roomName"
+                        [attr.aria-expanded]="confirmingId() === booking.id"
+                        [attr.aria-controls]="'cancel-confirmation-' + booking.id"
+                        [disabled]="isCancelling(booking.id)"
+                        (click)="askToCancel(booking)"
+                      >
+                        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+                          <path d="M4 7h16" />
+                          <path d="M9 7V4h6v3" />
+                          <path d="M6 7l1 13h10l1-13" />
+                          <path d="M10 11v6" />
+                          <path d="M14 11v6" />
+                        </svg>
+                        <span class="my-bookings__tooltip" aria-hidden="true">Cancel booking</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                @if (confirmingId() === booking.id) {
+                  <tr class="my-bookings__confirm-row">
+                    <td colspan="6">
+                      <div
+                        id="cancel-confirmation-{{ booking.id }}"
+                        class="my-bookings__confirm"
+                        role="group"
+                        [attr.aria-labelledby]="'cancel-question-' + booking.id"
+                      >
+                        <p id="cancel-question-{{ booking.id }}" class="my-bookings__question">
+                          Cancel {{ booking.meetingTitle }}?
+                        </p>
+                        <dl class="my-bookings__confirm-details">
+                          <dt>Room</dt>
+                          <dd>{{ booking.roomName }}</dd>
+                          <dt>Date</dt>
+                          <dd>{{ longDate(booking) }}</dd>
+                          <dt>Time</dt>
+                          <dd>{{ timeRange(booking) }}</dd>
+                        </dl>
+                        <div class="my-bookings__actions">
+                          <button
+                            type="button"
+                            id="keep-booking-{{ booking.id }}"
+                            class="my-bookings__button my-bookings__button--secondary"
+                            [disabled]="isCancelling(booking.id)"
+                            (click)="keepBooking(booking)"
+                          >
+                            Keep booking
+                          </button>
+                          <button
+                            type="button"
+                            class="my-bookings__button my-bookings__button--danger"
+                            [disabled]="isCancelling(booking.id)"
+                            [attr.aria-busy]="isCancelling(booking.id) || null"
+                            (click)="confirmCancel(booking)"
+                          >
+                            Cancel booking
+                          </button>
+                        </div>
+                        @if (isCancelling(booking.id)) {
+                          <p class="my-bookings__status" role="status">Cancelling…</p>
+                        }
+                        @if (cancelErrors().get(booking.id); as error) {
+                          <div class="my-bookings__error" role="alert">
+                            <p>{{ error }}</p>
+                            <button type="button" class="my-bookings__text-button" (click)="loadBookings()">
+                              Refresh the list
+                            </button>
+                          </div>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  }
+</main>

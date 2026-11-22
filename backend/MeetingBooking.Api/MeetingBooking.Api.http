@@ -1,0 +1,36 @@
+@MeetingBooking.Api_HostAddress = http://localhost:5050
+
+GET {{MeetingBooking.Api_HostAddress}}/api/rooms
+Accept: application/json
+
+###
+
+# Sets the guest cookie and the XSRF-TOKEN cookie. Required before booking.
+GET {{MeetingBooking.Api_HostAddress}}/api/guest-session
+
+###
+
+POST {{MeetingBooking.Api_HostAddress}}/api/bookings
+Content-Type: application/json
+
+{
+  "roomId": 3,
+  "guestName": "Sai",
+  "meetingTitle": "Sprint planning",
+  "date": "2026-12-01",
+  "startTime": "10:00",
+  "endTime": "11:00"
+}
+
+###
+
+GET {{MeetingBooking.Api_HostAddress}}/api/bookings/mine
+Accept: application/json
+
+###
+
+# Cancelling also needs the X-XSRF-TOKEN header: copy the XSRF-TOKEN cookie value.
+DELETE {{MeetingBooking.Api_HostAddress}}/api/bookings/1
+X-XSRF-TOKEN: paste-the-XSRF-TOKEN-cookie-value-here
+
+###

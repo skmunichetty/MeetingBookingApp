@@ -1,0 +1,246 @@
+@if (confirmed(); as booking) {
+  <section class="booking-form__confirmation" aria-labelledby="booking-confirmed-heading">
+    <h2 id="booking-confirmed-heading" class="booking-form__heading" tabindex="-1" #confirmationHeading>
+      Booking confirmed
+    </h2>
+    <p class="booking-form__preview-note">{{ booking.roomName }} is reserved. Booking reference #{{ booking.id }}.</p>
+    <dl class="booking-form__details">
+      <dt>Name</dt>
+      <dd>{{ booking.guestName }}</dd>
+      <dt>Room</dt>
+      <dd>{{ booking.roomName }}</dd>
+      <dt>Meeting</dt>
+      <dd>{{ booking.meetingTitle }}</dd>
+      <dt>Date</dt>
+      <dd>{{ booking.date | date: 'fullDate' }}</dd>
+      <dt>Time</dt>
+      <dd>{{ booking.startTime }}–{{ booking.endTime }}</dd>
+    </dl>
+    <div class="booking-form__actions">
+      <a class="booking-form__link-button" routerLink="/my-bookings">View my bookings</a>
+      <button type="button" class="booking-form__secondary" (click)="bookAnotherTime()">Book another time</button>
+    </div>
+  </section>
+} @else {
+  <form class="booking-form" [formGroup]="form" (ngSubmit)="submit()" aria-labelledby="booking-form-heading">
+    <h2 id="booking-form-heading" class="booking-form__heading">Meeting details</h2>
+    <p class="booking-form__hint">All fields are required. No account needed.</p>
+
+    <fieldset class="booking-form__fieldset" [disabled]="saving()">
+      <legend class="booking-form__legend">Booking details</legend>
+
+      <div class="booking-form__field">
+        <label class="booking-form__label" for="booking-guest-name">Your name</label>
+        <input
+          id="booking-guest-name"
+          class="booking-form__input"
+          type="text"
+          formControlName="guestName"
+          autocomplete="name"
+          aria-required="true"
+          [attr.maxlength]="guestNameMaxLength"
+          [attr.aria-invalid]="showError('guestName') || null"
+          [attr.aria-describedby]="showError('guestName') ? 'booking-guest-name-error' : null"
+        />
+        @if (showError('guestName')) {
+          <p id="booking-guest-name-error" class="booking-form__error">
+            @if (form.controls.guestName.hasError('required')) {
+              Enter your name.
+            } @else if (form.controls.guestName.hasError('blank')) {
+              Your name can't be only spaces.
+            } @else {
+              Use {{ guestNameMaxLength }} characters or fewer.
+            }
+          </p>
+        }
+      </div>
+
+      <div class="booking-form__field">
+        <label class="booking-form__label" for="booking-title">Meeting title</label>
+        <input
+          id="booking-title"
+          class="booking-form__input"
+          type="text"
+          formControlName="title"
+          autocomplete="off"
+          aria-required="true"
+          [attr.maxlength]="meetingTitleMaxLength"
+          [attr.aria-invalid]="showError('title') || null"
+          [attr.aria-describedby]="showError('title') ? 'booking-title-error' : null"
+        />
+        @if (showError('title')) {
+          <p id="booking-title-error" class="booking-form__error">
+            @if (form.controls.title.hasError('required')) {
+              Enter a meeting title.
+            } @else if (form.controls.title.hasError('blank')) {
+              The meeting title can't be only spaces.
+            } @else {
+              Use {{ meetingTitleMaxLength }} characters or fewer.
+            }
+          </p>
+        }
+      </div>
+
+      <div class="booking-form__field">
+        <label class="booking-form__label" for="booking-date">Date</label>
+        <input
+          id="booking-date"
+          class="booking-form__input"
+          type="date"
+          formControlName="date"
+          aria-required="true"
+          [attr.aria-invalid]="showError('date') || null"
+          [attr.aria-describedby]="showError('date') ? 'booking-date-error' : null"
+        />
+        @if (showError('date')) {
+          <p id="booking-date-error" class="booking-form__error">Choose a meeting date.</p>
+        }
+      </div>
+
+      <div class="booking-form__times">
+        <div class="booking-form__field">
+          <label class="booking-form__label" for="booking-start-time">Start time</label>
+          <input
+            #startTimeInput
+            id="booking-start-time"
+            class="booking-form__input"
+            type="time"
+            formControlName="startTime"
+            aria-required="true"
+            [attr.aria-invalid]="showError('startTime') || null"
+            [attr.aria-describedby]="showError('startTime') ? 'booking-start-time-error' : null"
+          />
+          @if (showError('startTime')) {
+            <p id="booking-start-time-error" class="booking-form__error">Choose a start time.</p>
+          }
+        </div>
+
+        <div class="booking-form__field">
+          <label class="booking-form__label" for="booking-end-time">End time</label>
+          <input
+            id="booking-end-time"
+            class="booking-form__input"
+            type="time"
+            formControlName="endTime"
+            aria-required="true"
+            [attr.aria-invalid]="showError('endTime') || showTimeRangeError() || null"
+            [attr.aria-describedby]="showError('endTime') || showTimeRangeError() ? 'booking-end-time-error' : null"
+          />
+          @if (showError('endTime')) {
+            <p id="booking-end-time-error" class="booking-form__error">Choose an end time.</p>
+          } @else if (showTimeRangeError()) {
+            <p id="booking-end-time-error" class="booking-form__error">End time must be later than the start time.</p>
+          }
+        </div>
+      </div>
+
+      @if (saveProblem()?.kind === 'conflict') {
+        <p class="booking-form__alert" role="alert">
+          @if (isEditing()) {
+            That time is already booked for {{ room().name }}. Your booking hasn't changed and your edits are still
+            here: choose another time and save again.
+          } @else {
+            That time is already booked for {{ room().name }}. Your details are still here: choose another time and
+            preview again.
+          }
+        </p>
+      }
+
+      @if (isEditing()) {
+        @switch (saveProblem()?.kind) {
+          @case ('not-found') {
+            <p class="booking-form__alert" role="alert">
+              This booking can't be found in this browser any more. It may have been cancelled.
+            </p>
+          }
+          @case ('rejected') {
+            <div class="booking-form__alert" role="alert">
+              @if (rejectionMessages().length > 0) {
+                <p>The server didn't accept these changes:</p>
+                <ul>
+                  @for (message of rejectionMessages(); track $index) {
+                    <li>{{ message }}</li>
+                  }
+                </ul>
+              } @else {
+                <p>Your session needs refreshing. Reload the page, then save again.</p>
+              }
+            </div>
+          }
+          @case ('unreachable') {
+            <p class="booking-form__alert" role="alert">
+              We couldn't reach the server, so nothing was changed. Check your connection and try again.
+            </p>
+          }
+        }
+
+        <div class="booking-form__actions booking-form__actions--form">
+          <button type="submit" class="booking-form__submit" [attr.aria-busy]="saving() || null">Save changes</button>
+          <a class="booking-form__secondary booking-form__secondary--link" routerLink="/my-bookings">
+            Back without saving
+          </a>
+        </div>
+        @if (saving()) {
+          <p class="booking-form__status" role="status">Saving changes…</p>
+        }
+      } @else {
+        <button type="submit" class="booking-form__submit">Preview booking</button>
+      }
+    </fieldset>
+  </form>
+
+  <div aria-live="polite">
+    @if (preview(); as details) {
+      <section class="booking-form__preview" aria-labelledby="booking-preview-heading">
+        <h2 id="booking-preview-heading" class="booking-form__heading">Booking preview</h2>
+        <p class="booking-form__preview-note">Not reserved yet. Check the details, then confirm.</p>
+        <dl class="booking-form__details">
+          <dt>Name</dt>
+          <dd>{{ details.guestName }}</dd>
+          <dt>Room</dt>
+          <dd>{{ details.roomName }}</dd>
+          <dt>Meeting</dt>
+          <dd>{{ details.meetingTitle }}</dd>
+          <dt>Date</dt>
+          <dd>{{ details.date | date: 'fullDate' }}</dd>
+          <dt>Time</dt>
+          <dd>{{ details.startTime }}–{{ details.endTime }}</dd>
+        </dl>
+
+        <button
+          type="button"
+          class="booking-form__submit booking-form__confirm"
+          [disabled]="saving()"
+          [attr.aria-busy]="saving() || null"
+          (click)="confirmBooking()"
+        >
+          Confirm booking
+        </button>
+
+        @if (saving()) {
+          <p class="booking-form__status" role="status">Saving your booking…</p>
+        }
+        @switch (saveProblem()?.kind) {
+          @case ('not-found') {
+            <p class="booking-form__alert" role="alert">This room no longer exists, so it can't be booked.</p>
+          }
+          @case ('rejected') {
+            <div class="booking-form__alert" role="alert">
+              <p>The server didn't accept these details:</p>
+              <ul>
+                @for (message of rejectionMessages(); track $index) {
+                  <li>{{ message }}</li>
+                }
+              </ul>
+            </div>
+          }
+          @case ('unreachable') {
+            <p class="booking-form__alert" role="alert">
+              We couldn't reach the server, so nothing was booked. Check your connection and try again.
+            </p>
+          }
+        }
+      </section>
+    }
+  </div>
+}
